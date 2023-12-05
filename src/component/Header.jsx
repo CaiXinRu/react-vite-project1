@@ -17,7 +17,10 @@ function Header() {
         <Menu.Menu position="right">
           {isLoggedIn ? (
             <>
-              <Menu.Item as={Link}>會員</Menu.Item>
+              <Menu.Item as={Link} to="/todolist">
+                To-Do List
+              </Menu.Item>
+              <Menu.Item as={Link}>Member Area</Menu.Item>
               <Menu.Item onClick={logOut}>Log Out</Menu.Item>
             </>
           ) : (
