@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Checkbox } from "../../components/ui/checkbox";
@@ -7,8 +7,13 @@ import { useToast } from "../../components/ui/use-toast";
 import { Toaster } from "../../components/ui/toaster";
 
 export default function TodoList() {
-  const [todoList, setTodoList] = useState([]);
+  const [todoList, setTodoList] = useState(
+    JSON.parse(localStorage.getItem("todoList")) || []
+  );
   const { toast } = useToast();
+  useEffect(() => {
+    window.localStorage.setItem("todoList", JSON.stringify(todoList));
+  });
 
   const addTodo = (event) => {
     const input = document.querySelector("#todoInput");
@@ -44,7 +49,6 @@ export default function TodoList() {
       return todo;
     });
     setTodoList([...newTodoList]);
-    console.log(event.target.dataset);
   };
   const removeAllTodo = () => {
     setTodoList([]);
