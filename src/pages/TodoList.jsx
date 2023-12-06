@@ -11,9 +11,12 @@ export default function TodoList() {
   const [todoList, setTodoList] = useState(
     JSON.parse(localStorage.getItem("todoList")) || []
   );
+  const [todoNum, setTodoNum] = useState(0);
   const { toast } = useToast();
   useEffect(() => {
     window.localStorage.setItem("todoList", JSON.stringify(todoList));
+    const todoItems = todoList.filter((item) => item.status === false);
+    setTodoNum(todoItems.length);
   });
 
   const addTodo = (event) => {
@@ -82,7 +85,7 @@ export default function TodoList() {
       <ul>
         {todoList.map((todo) => (
           <li
-            className="items-top flex space-x-2 pb-6 pl-6 relative"
+            className="items-top flex space-x-2 mb-6 ml-6 relative"
             key={todo.id}
             data-id={todo.id}
             onClick={updateTodo}
@@ -92,7 +95,7 @@ export default function TodoList() {
               <label
                 htmlFor={todo.id}
                 data-id={todo.id}
-                className={`text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                className={`text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer ${
                   todo.status ? "line-through" : ""
                 }`}
               >
@@ -107,10 +110,15 @@ export default function TodoList() {
         ))}
       </ul>
 
-      <div className="flex justify-end items-center pt-2">
-        <p className="mx-4">
-          目前有 <span className="font-medium">{todoList.length}</span>
-          個事項待完成
+      <div className="flex justify-between items-center pt-2">
+        <p>
+          There{" "}
+          {todoNum > 1
+            ? `are ${todoNum} tasks`
+            : todoNum == 1
+            ? `is ${todoNum} task`
+            : `is no task`}{" "}
+          pending.
         </p>
         <Button onClick={removeAllTodo} type="button">
           Clear All Task
