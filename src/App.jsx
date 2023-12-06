@@ -9,7 +9,9 @@ import TodoList from "./pages/TodoList";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      basename={import.meta.env.DEV ? "/" : "/react-vite-project1/"}
+    >
       <AuthProvider>
         <Container>
           <Header />
