@@ -5,6 +5,7 @@ import { Checkbox } from "../../components/ui/checkbox";
 import { ToastAction } from "../../components/ui/toast";
 import { useToast } from "../../components/ui/use-toast";
 import { Toaster } from "../../components/ui/toaster";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
 export default function TodoList() {
   const [todoList, setTodoList] = useState(
@@ -50,12 +51,17 @@ export default function TodoList() {
     });
     setTodoList([...newTodoList]);
   };
+  const deleteItem = (id) => {
+    const index = todoList.findIndex((item) => item.id === id);
+    todoList.splice(index, 1);
+  };
   const removeAllTodo = () => {
     setTodoList([]);
   };
 
   return (
-    <div className="px-28">
+    <div className="mx-28">
+      <Toaster />
       <div className="flex items-center pb-8">
         <div className="inline-flex h-16 items-center justify-center rounded-md w-full text-4xl font-medium bg-primary text-primary-foreground shadow">
           To-Do List
@@ -71,32 +77,37 @@ export default function TodoList() {
         />
         <Button onClick={addTodo} className="h-16 text-lg" type="button">
           +
-          <Toaster />
-          {/* 增加Toaster到return才能顯示錯誤 */}
         </Button>
       </div>
-      {todoList.map((todo) => (
-        <div
-          className="items-top flex space-x-2 pb-6 pl-6"
-          key={todo.id}
-          data-id={todo.id}
-          onClick={updateTodo}
-        >
-          <Checkbox key={todo.id} checked={todo.status} data-id={todo.id} />
-          <div className="grid gap-1.5 leading-none">
-            <label
-              htmlFor={todo.id}
-              data-id={todo.id}
-              className={`text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
-                todo.status ? "line-through" : ""
-              }`}
-            >
-              {todo.name}
-            </label>
-          </div>
-        </div>
-      ))}
-      <div className="flex justify-end items-center">
+      <ul>
+        {todoList.map((todo) => (
+          <li
+            className="items-top flex space-x-2 pb-6 pl-6 relative"
+            key={todo.id}
+            data-id={todo.id}
+            onClick={updateTodo}
+          >
+            <Checkbox key={todo.id} checked={todo.status} data-id={todo.id} />
+            <div className="flex gap-1.5 leading-none">
+              <label
+                htmlFor={todo.id}
+                data-id={todo.id}
+                className={`text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                  todo.status ? "line-through" : ""
+                }`}
+              >
+                {todo.name}
+              </label>
+            </div>
+            <Cross2Icon
+              className="absolute right-10 cursor-pointer"
+              onClick={() => deleteItem(todo.id)}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <div className="flex justify-end items-center pt-2">
         <p className="mx-4">
           目前有 <span className="font-medium">{todoList.length}</span>
           個事項待完成
