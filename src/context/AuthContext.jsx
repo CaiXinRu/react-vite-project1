@@ -88,16 +88,30 @@ export const AuthProvider = ({ children }) => {
       console.log("AddTodo successful:", response);
     } catch (error) {
       console.log("AddTodo failed:", error.response);
-      console.log(token);
+    }
+  };
+
+  const getTodo = async () => {
+    const token = getToken();
+    try {
+      const response = await axios.get(`${apiUrl}/todos`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      console.log("getTodo successful:", response.data.todos[0]);
+    } catch (error) {
+      console.log("getTodo failed:", error.response);
     }
   };
 
   const contextValue = {
+    getToken,
     isLoggedIn,
     logOut,
     logIn,
     addTodo,
-    getToken,
+    getTodo,
   };
 
   return (

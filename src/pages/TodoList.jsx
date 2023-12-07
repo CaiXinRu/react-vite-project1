@@ -10,22 +10,22 @@ import { useAuth } from "../context/AuthContext";
 
 export default function TodoList() {
   const { toast } = useToast();
-  const { addTodo } = useAuth();
+  const { addTodo, getTodo } = useAuth();
   const [todoList, setTodoList] = useState([]);
-  const [todoNum, setTodoNum] = useState(0);
   useEffect(() => {
-    setTodoList((prevTodoList) => {
-      const latestTodo = prevTodoList[prevTodoList.length - 1];
-      if (latestTodo) {
-        addTodo(latestTodo.content);
-      }
-      return prevTodoList;
-    });
-    const todoItems = todoList.filter((item) => item.status === false);
-    setTodoNum(todoItems.length);
-  }, [todoList, addTodo]);
+    fetchTodos();
+  }, []);
 
-  const submitTodo = (event) => {
+  const fetchTodos = async () => {
+    try {
+      const response = await getTodo();
+      console.log(response);
+    } catch (error) {
+      console.log("Error fetching todos:", error);
+    }
+  };
+
+  const submitTodo = async () => {
     const input = document.querySelector("#todoInput");
     if (input.value.trim() === "") {
       toast({
@@ -35,14 +35,12 @@ export default function TodoList() {
       });
       return;
     }
-    setTodoList((prevTodoList) => [
-      ...prevTodoList,
-      {
-        id: Date.now(),
-        content: input.value.trim(),
-        status: false,
-      },
-    ]);
+    try {
+      await addTodo(input.value.trim());
+    } catch (error) {
+      console.log("Error adding todos:", error);
+    }
+    await fetchTodos();
     input.value = "";
   };
   const handleKeyDown = (event) => {
@@ -96,14 +94,12 @@ export default function TodoList() {
             data-id={todo.id}
             onClick={updateTodo}
           >
-            <Checkbox key={todo.id} checked={todo.status} data-id={todo.id} />
+            <Checkbox key={todo.id} data-id={todo.id} />
             <div className="flex gap-1.5 leading-none">
               <label
                 htmlFor={todo.id}
                 data-id={todo.id}
-                className={`text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer ${
-                  todo.status ? "line-through" : ""
-                }`}
+                className="text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
               >
                 {todo.content}
               </label>
@@ -119,10 +115,10 @@ export default function TodoList() {
       <div className="flex justify-between items-center pt-2">
         <p>
           There{" "}
-          {todoNum > 1
-            ? `are ${todoNum} tasks`
-            : todoNum == 1
-            ? `is ${todoNum} task`
+          {todoList.length > 1
+            ? `are ${todoList.length} tasks`
+            : todoList.length == 1
+            ? `is ${todoList.length} task`
             : `is no task`}{" "}
           pending.
         </p>
