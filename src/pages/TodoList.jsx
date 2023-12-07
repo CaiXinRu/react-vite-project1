@@ -6,20 +6,26 @@ import { ToastAction } from "../../components/ui/toast";
 import { useToast } from "../../components/ui/use-toast";
 import { Toaster } from "../../components/ui/toaster";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { useAuth } from "../context/AuthContext";
 
 export default function TodoList() {
-  const [todoList, setTodoList] = useState(
-    JSON.parse(localStorage.getItem("todoList")) || []
-  );
-  const [todoNum, setTodoNum] = useState(0);
   const { toast } = useToast();
+  const { addTodo } = useAuth();
+  const [todoList, setTodoList] = useState([]);
+  const [todoNum, setTodoNum] = useState(0);
   useEffect(() => {
-    window.localStorage.setItem("todoList", JSON.stringify(todoList));
+    setTodoList((prevTodoList) => {
+      const latestTodo = prevTodoList[prevTodoList.length - 1];
+      if (latestTodo) {
+        addTodo(latestTodo.content);
+      }
+      return prevTodoList;
+    });
     const todoItems = todoList.filter((item) => item.status === false);
     setTodoNum(todoItems.length);
-  });
+  }, [todoList, addTodo]);
 
-  const addTodo = (event) => {
+  const submitTodo = (event) => {
     const input = document.querySelector("#todoInput");
     if (input.value.trim() === "") {
       toast({
@@ -29,11 +35,11 @@ export default function TodoList() {
       });
       return;
     }
-    setTodoList([
-      ...todoList,
+    setTodoList((prevTodoList) => [
+      ...prevTodoList,
       {
         id: Date.now(),
-        name: input.value.trim(),
+        content: input.value.trim(),
         status: false,
       },
     ]);
@@ -41,7 +47,7 @@ export default function TodoList() {
   };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      addTodo();
+      submitTodo();
     }
   };
   const updateTodo = (event) => {
@@ -78,7 +84,7 @@ export default function TodoList() {
           id="todoInput"
           onKeyDown={handleKeyDown}
         />
-        <Button onClick={addTodo} className="h-16 text-lg" type="button">
+        <Button onClick={submitTodo} className="h-16 text-lg" type="button">
           +
         </Button>
       </div>
@@ -99,7 +105,7 @@ export default function TodoList() {
                   todo.status ? "line-through" : ""
                 }`}
               >
-                {todo.name}
+                {todo.content}
               </label>
             </div>
             <Cross2Icon

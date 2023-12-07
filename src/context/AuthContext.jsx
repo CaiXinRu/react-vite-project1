@@ -18,13 +18,17 @@ export const AuthProvider = ({ children }) => {
     checkLoginStatus();
   }, []);
 
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
+
   const checkLoginStatus = () => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     setIsLoggedIn(!!token); // 使用!!轉換為布林值
   };
 
   const logOut = async () => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     try {
       await axios.delete(`${apiUrl}/users/sign_out`, {
         headers: {
@@ -64,10 +68,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const addTodo = async (content) => {
+    const token = getToken();
+    try {
+      const response = await axios.post(
+        `${apiUrl}/todos`,
+        {
+          todo: {
+            content: content,
+          },
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      console.log("AddTodo successful:", response);
+    } catch (error) {
+      console.log("AddTodo failed:", error.response);
+      console.log(token);
+    }
+  };
+
   const contextValue = {
     isLoggedIn,
     logOut,
     logIn,
+    addTodo,
+    getToken,
   };
 
   return (
