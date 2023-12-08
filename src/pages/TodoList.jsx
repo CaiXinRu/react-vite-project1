@@ -5,12 +5,12 @@ import { Checkbox } from "../../components/ui/checkbox";
 import { ToastAction } from "../../components/ui/toast";
 import { useToast } from "../../components/ui/use-toast";
 import { Toaster } from "../../components/ui/toaster";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useAuth } from "../context/AuthContext";
 
 export default function TodoList() {
   const { toast } = useToast();
-  const { addTodo, getTodos, deleteTodo, toggleTodo } = useAuth();
+  const { addTodo, getTodos, deleteTodo, toggleTodo, editTodo } = useAuth();
   const [todoList, setTodoList] = useState([]);
   const [todoNum, setTodoNum] = useState(0);
 
@@ -26,7 +26,7 @@ export default function TodoList() {
       setTodoNum(todoItems.length);
       setTodoList(todos);
     } catch (error) {
-      console.log("Error fetching todos:", error);
+      console.error("Error fetching todos:", error);
     }
   };
 
@@ -43,7 +43,7 @@ export default function TodoList() {
     try {
       await addTodo(input.value.trim());
     } catch (error) {
-      console.log("Error adding todos:", error);
+      console.error("Error adding todos:", error);
     }
     await fetchTodos();
     input.value = "";
@@ -59,7 +59,7 @@ export default function TodoList() {
     try {
       await toggleTodo(id);
     } catch (error) {
-      console.log("Error switching todo:", error);
+      console.error("Error switching todo:", error);
     }
     await fetchTodos();
   };
@@ -68,7 +68,7 @@ export default function TodoList() {
     try {
       await deleteTodo(id);
     } catch (error) {
-      console.log("Error deleting todo:", error);
+      console.error("Error deleting todo:", error);
     }
     await fetchTodos();
   };
@@ -121,8 +121,9 @@ export default function TodoList() {
                 {todo.content}
               </label>
             </div>
+            <Pencil1Icon className="absolute right-20 cursor-pointer" />
             <Cross2Icon
-              className="absolute right-3 cursor-pointer"
+              className="absolute right-6 cursor-pointer"
               onClick={() => deleteItem(todo.id)}
             />
           </li>

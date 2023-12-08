@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("token");
       checkLoginStatus();
     } catch (error) {
-      console.log("Logout failed:", error.response);
+      console.error("Logout failed:", error.response);
     }
   };
 
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
       checkLoginStatus();
     } catch (error) {
-      console.log("Login/Signup failed:", error.response);
+      console.error("Login/Signup failed:", error.response);
     }
   };
 
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 
       console.log("AddTodo successful:", response);
     } catch (error) {
-      console.log("AddTodo failed:", error.response);
+      console.error("AddTodo failed:", error.response);
     }
   };
 
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
       console.log("getTodos successful:", response.data.todos);
       return response;
     } catch (error) {
-      console.log("getTodos failed:", error.response);
+      console.error("getTodos failed:", error.response);
     }
   };
 
@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }) => {
       });
       console.log("deleteTodo successful:", response);
     } catch (error) {
-      console.log("deleteTodo failed:", error.response);
+      console.error("deleteTodo failed:", error.response);
     }
   };
 
@@ -134,7 +134,29 @@ export const AuthProvider = ({ children }) => {
       );
       console.log("toggleTodo successful:", response);
     } catch (error) {
-      console.log("toggleTodo failed:", error.response);
+      console.error("toggleTodo failed:", error.response);
+    }
+  };
+
+  const editTodo = async (todo, todoId) => {
+    const token = getToken();
+    try {
+      const response = axios.put(
+        `${apiUrl}/todos/${todoId}`,
+        {
+          todo: {
+            content: todo,
+          },
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log("editTodo successful:", response);
+    } catch (error) {
+      console.error("editTodo failed:", error.response);
     }
   };
 
@@ -147,6 +169,7 @@ export const AuthProvider = ({ children }) => {
     getTodos,
     deleteTodo,
     toggleTodo,
+    editTodo,
   };
 
   return (
