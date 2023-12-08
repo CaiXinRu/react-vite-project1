@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }) => {
   const deleteTodo = async (id) => {
     const token = getToken();
     try {
-      await axios.delete(`${apiUrl}/todos/${id}`, {
+      const response = await axios.delete(`${apiUrl}/todos/${id}`, {
         headers: {
           Authorization: token,
         },
@@ -117,6 +117,24 @@ export const AuthProvider = ({ children }) => {
       console.log("deleteTodo successful:", response);
     } catch (error) {
       console.log("deleteTodo failed:", error.response);
+    }
+  };
+
+  const toggleTodo = async (id) => {
+    const token = getToken();
+    try {
+      const response = await axios.patch(
+        `${apiUrl}/todos/${id}/toggle`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      console.log("toggleTodo successful:", response);
+    } catch (error) {
+      console.log("toggleTodo failed:", error.response);
     }
   };
 
@@ -128,6 +146,7 @@ export const AuthProvider = ({ children }) => {
     addTodo,
     getTodos,
     deleteTodo,
+    toggleTodo,
   };
 
   return (

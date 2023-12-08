@@ -10,8 +10,9 @@ import { useAuth } from "../context/AuthContext";
 
 export default function TodoList() {
   const { toast } = useToast();
-  const { addTodo, getTodos, deleteTodo } = useAuth();
+  const { addTodo, getTodos, deleteTodo, toggleTodo } = useAuth();
   const [todoList, setTodoList] = useState([]);
+  const [todoNum, setTodoNum] = useState(0);
 
   useEffect(() => {
     fetchTodos();
@@ -21,6 +22,8 @@ export default function TodoList() {
     try {
       const response = await getTodos();
       const todos = response.data.todos;
+      const todoItems = todos.filter((item) => item.completed_at === null);
+      setTodoNum(todoItems.length);
       setTodoList(todos);
     } catch (error) {
       console.log("Error fetching todos:", error);
@@ -45,21 +48,22 @@ export default function TodoList() {
     await fetchTodos();
     input.value = "";
   };
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       submitTodo();
     }
   };
-  const updateTodo = (event) => {
-    const { id } = event.target.dataset;
-    const newTodoList = todoList.map((todo) => {
-      if (todo.id === Number(id)) {
-        todo.status = !todo.status;
-      }
-      return todo;
-    });
-    setTodoList([...newTodoList]);
+
+  const switchTodo = async (id) => {
+    try {
+      await toggleTodo(id);
+    } catch (error) {
+      console.log("Error switching todo:", error);
+    }
+    await fetchTodos();
   };
+
   const deleteItem = async (id) => {
     try {
       await deleteTodo(id);
@@ -68,6 +72,7 @@ export default function TodoList() {
     }
     await fetchTodos();
   };
+
   const removeAllTodo = () => {
     setTodoList([]);
   };
@@ -98,14 +103,20 @@ export default function TodoList() {
             className="items-top flex space-x-2 mb-6 ml-6 relative"
             key={todo.id}
             data-id={todo.id}
-            onClick={updateTodo}
+            onClick={() => switchTodo(todo.id)}
           >
-            <Checkbox key={todo.id} data-id={todo.id} />
+            <Checkbox
+              key={todo.id}
+              data-id={todo.id}
+              checked={todo.completed_at ? true : false}
+            />
             <div className="flex gap-1.5 leading-none">
               <label
                 htmlFor={todo.id}
                 data-id={todo.id}
-                className="text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className={`text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer ${
+                  todo.completed_at ? "line-through" : ""
+                }`}
               >
                 {todo.content}
               </label>
@@ -121,10 +132,10 @@ export default function TodoList() {
       <div className="flex justify-between items-center pt-2 pb-16">
         <p>
           There{" "}
-          {todoList.length > 1
-            ? `are ${todoList.length} tasks`
-            : todoList.length == 1
-            ? `is ${todoList.length} task`
+          {todoNum > 1
+            ? `are ${todoNum} tasks`
+            : todoNum == 1
+            ? `is ${todoNum} task`
             : `is no task`}{" "}
           pending.
         </p>
