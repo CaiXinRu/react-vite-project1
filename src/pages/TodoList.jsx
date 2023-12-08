@@ -10,16 +10,18 @@ import { useAuth } from "../context/AuthContext";
 
 export default function TodoList() {
   const { toast } = useToast();
-  const { addTodo, getTodo } = useAuth();
+  const { addTodo, getTodos, deleteTodo } = useAuth();
   const [todoList, setTodoList] = useState([]);
+
   useEffect(() => {
     fetchTodos();
   }, []);
 
   const fetchTodos = async () => {
     try {
-      const response = await getTodo();
-      console.log(response);
+      const response = await getTodos();
+      const todos = response.data.todos;
+      setTodoList(todos);
     } catch (error) {
       console.log("Error fetching todos:", error);
     }
@@ -58,9 +60,13 @@ export default function TodoList() {
     });
     setTodoList([...newTodoList]);
   };
-  const deleteItem = (id) => {
-    const index = todoList.findIndex((item) => item.id === id);
-    todoList.splice(index, 1);
+  const deleteItem = async (id) => {
+    try {
+      await deleteTodo(id);
+    } catch (error) {
+      console.log("Error deleting todo:", error);
+    }
+    await fetchTodos();
   };
   const removeAllTodo = () => {
     setTodoList([]);
@@ -105,14 +111,14 @@ export default function TodoList() {
               </label>
             </div>
             <Cross2Icon
-              className="absolute right-10 cursor-pointer"
+              className="absolute right-3 cursor-pointer"
               onClick={() => deleteItem(todo.id)}
             />
           </li>
         ))}
       </ul>
 
-      <div className="flex justify-between items-center pt-2">
+      <div className="flex justify-between items-center pt-2 pb-16">
         <p>
           There{" "}
           {todoList.length > 1

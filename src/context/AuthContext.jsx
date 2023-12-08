@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const getTodo = async () => {
+  const getTodos = async () => {
     const token = getToken();
     try {
       const response = await axios.get(`${apiUrl}/todos`, {
@@ -99,9 +99,24 @@ export const AuthProvider = ({ children }) => {
           Authorization: token,
         },
       });
-      console.log("getTodo successful:", response.data.todos[0]);
+      console.log("getTodos successful:", response.data.todos);
+      return response;
     } catch (error) {
-      console.log("getTodo failed:", error.response);
+      console.log("getTodos failed:", error.response);
+    }
+  };
+
+  const deleteTodo = async (id) => {
+    const token = getToken();
+    try {
+      await axios.delete(`${apiUrl}/todos/${id}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      console.log("deleteTodo successful:", response);
+    } catch (error) {
+      console.log("deleteTodo failed:", error.response);
     }
   };
 
@@ -111,7 +126,8 @@ export const AuthProvider = ({ children }) => {
     logOut,
     logIn,
     addTodo,
-    getTodo,
+    getTodos,
+    deleteTodo,
   };
 
   return (
