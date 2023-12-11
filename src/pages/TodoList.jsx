@@ -7,6 +7,15 @@ import { useToast } from "../../components/ui/use-toast";
 import { Toaster } from "../../components/ui/toaster";
 import { Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useAuth } from "../context/AuthContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogClose,
+  DialogTrigger,
+} from "../../components/ui/dialog";
+import { Label } from "../../components/ui/label";
 
 export default function TodoList() {
   const { toast } = useToast();
@@ -73,6 +82,21 @@ export default function TodoList() {
     await fetchTodos();
   };
 
+  const editItem = async (id) => {
+    const input = document.querySelector("#newInput");
+    const newTodo = input.value.trim();
+    try {
+      await editTodo(newTodo, id);
+      setTodoList((prevTodoList) =>
+        prevTodoList.map((todo) =>
+          todo.id === id ? { ...todo, content: newTodo } : todo
+        )
+      );
+    } catch (error) {
+      console.error("Error editing todo:", error);
+    }
+  };
+
   const removeAllTodo = () => {
     setTodoList([]);
   };
@@ -103,17 +127,18 @@ export default function TodoList() {
             className="items-top flex space-x-2 mb-6 ml-6 relative"
             key={todo.id}
             data-id={todo.id}
-            onClick={() => switchTodo(todo.id)}
           >
             <Checkbox
               key={todo.id}
               data-id={todo.id}
+              onClick={() => switchTodo(todo.id)}
               checked={todo.completed_at ? true : false}
             />
             <div className="flex gap-1.5 leading-none">
               <label
                 htmlFor={todo.id}
                 data-id={todo.id}
+                onClick={() => switchTodo(todo.id)}
                 className={`text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer ${
                   todo.completed_at ? "line-through" : ""
                 }`}
@@ -121,7 +146,46 @@ export default function TodoList() {
                 {todo.content}
               </label>
             </div>
-            <Pencil1Icon className="absolute right-20 cursor-pointer" />
+            <Dialog>
+              <DialogTrigger asChild>
+                <Pencil1Icon className="absolute right-20 cursor-pointer" />
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>Edit Your To-Do Item.</DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-6 items-center gap-4">
+                    <Label htmlFor="name" className="text-right">
+                      Original
+                    </Label>
+                    <Input
+                      id="oldInput"
+                      value={todo.content}
+                      className="col-span-5"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-6 items-center gap-4">
+                    <Label htmlFor="name" className="text-right">
+                      Updated
+                    </Label>
+                    <Input
+                      id="newInput"
+                      className="col-span-5"
+                      placeholder="Put down your new To-Do."
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button onClick={() => editItem(todo.id)} type="submit">
+                      Save changes
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Cross2Icon
               className="absolute right-6 cursor-pointer"
               onClick={() => deleteItem(todo.id)}
