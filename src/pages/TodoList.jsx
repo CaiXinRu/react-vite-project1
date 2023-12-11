@@ -43,6 +43,7 @@ export default function TodoList() {
     const input = document.querySelector("#todoInput");
     if (input.value.trim() === "") {
       toast({
+        variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: "Please write down the item.",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
@@ -85,6 +86,7 @@ export default function TodoList() {
   const editItem = async (id) => {
     const input = document.querySelector("#newInput");
     const newTodo = input.value.trim();
+    if (!newTodo) return;
     try {
       await editTodo(newTodo, id);
       setTodoList((prevTodoList) =>
@@ -97,8 +99,18 @@ export default function TodoList() {
     }
   };
 
-  const removeAllTodo = () => {
-    setTodoList([]);
+  const removeDoneTodo = async () => {
+    const doneItems = todoList.filter((item) => item.completed_at);
+    try {
+      await Promise.all(
+        doneItems.map(async (item) => {
+          await deleteItem(item.id);
+        })
+      );
+      await fetchTodos();
+    } catch (error) {
+      console.error("Error removing done todos:", error);
+    }
   };
 
   return (
@@ -204,8 +216,8 @@ export default function TodoList() {
             : `is no task`}{" "}
           pending.
         </p>
-        <Button onClick={removeAllTodo} type="button">
-          Clear All Task
+        <Button onClick={removeDoneTodo} type="button">
+          Clear Finished Tasks
         </Button>
       </div>
     </div>
