@@ -45,7 +45,7 @@ export default function TodoList() {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "Please write down the item.",
+        description: "Please put down your item.",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
       return;
@@ -86,8 +86,8 @@ export default function TodoList() {
   const editItem = async (id) => {
     const input = document.querySelector("#newInput");
     const newTodo = input.value.trim();
-    if (!newTodo) return;
     try {
+      if (!newTodo) throw Error();
       await editTodo(newTodo, id);
       setTodoList((prevTodoList) =>
         prevTodoList.map((todo) =>
@@ -96,11 +96,26 @@ export default function TodoList() {
       );
     } catch (error) {
       console.error("Error editing todo:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Please put down your item.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
     }
   };
 
   const removeDoneTodo = async () => {
     const doneItems = todoList.filter((item) => item.completed_at);
+    if (doneItems.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "You haven't finished any tasks yet.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+      return;
+    }
     try {
       await Promise.all(
         doneItems.map(async (item) => {
@@ -160,7 +175,7 @@ export default function TodoList() {
             </div>
             <Dialog>
               <DialogTrigger asChild>
-                <Pencil1Icon className="absolute right-20 cursor-pointer" />
+                <Pencil1Icon className="absolute right-24 cursor-pointer" />
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>Edit Your To-Do Item.</DialogHeader>
@@ -199,7 +214,7 @@ export default function TodoList() {
               </DialogContent>
             </Dialog>
             <Cross2Icon
-              className="absolute right-6 cursor-pointer"
+              className="absolute right-10 cursor-pointer"
               onClick={() => deleteItem(todo.id)}
             />
           </li>
