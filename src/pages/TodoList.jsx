@@ -16,6 +16,17 @@ import {
   DialogTrigger,
 } from "../../components/ui/dialog";
 import { Label } from "../../components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../../components/ui/alert-dialog";
 
 export default function TodoList() {
   const { toast } = useToast();
@@ -213,10 +224,26 @@ export default function TodoList() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Cross2Icon
-              className="absolute right-10 cursor-pointer"
-              onClick={() => deleteItem(todo.id)}
-            />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Cross2Icon className="absolute right-10 cursor-pointer" />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently remove
+                    your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => deleteItem(todo.id)}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </li>
         ))}
       </ul>
@@ -231,9 +258,26 @@ export default function TodoList() {
             : `is no task`}{" "}
           pending.
         </p>
-        <Button onClick={removeDoneTodo} type="button">
-          Clear Finished Tasks
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button type="button">Clear Finished Tasks</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Clearing finished tasks?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently remove your
+                data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={removeDoneTodo}>
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
