@@ -1,178 +1,31 @@
-// AuthContext.js
 import { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useAuth } from "../context/AuthService";
+import LogIn from "../pages/LogIn";
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
 export const AuthProvider = ({ children }) => {
-  const apiUrl = `https://todoo.5xcamp.us`;
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    checkLoginStatus();
-  }, []);
-
-  const getToken = () => {
-    return localStorage.getItem("token");
-  };
-
-  const checkLoginStatus = () => {
-    const token = getToken();
-    setIsLoggedIn(!!token); // 使用!!轉換為布林值
-  };
-
-  const logOut = async () => {
-    const token = getToken();
-    try {
-      await axios.delete(`${apiUrl}/users/sign_out`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      console.log("Logout successful");
-      localStorage.removeItem("token");
-      checkLoginStatus();
-    } catch (error) {
-      console.error("Logout failed:", error.response);
-    }
-  };
-
-  const logIn = async (email, password, isSignUp) => {
-    try {
-      const response = await axios.post(
-        isSignUp ? `${apiUrl}/users` : `${apiUrl}/users/sign_in`,
-        {
-          user: {
-            email: email,
-            password: password,
-          },
-        }
-      );
-
-      console.log("Login/Signup successful:", response);
-      navigate("/");
-
-      if (!isSignUp) {
-        localStorage.setItem("token", response.headers.authorization);
+    const checkLoginStatus = async () => {
+      let cuser = isAuthenticated();
+      console.log(cuser);
+      if (Object.keys(cuser).length === 0) {
+        localStorage.setItem("token", "");
+        cuser = "";
       }
-
-      checkLoginStatus();
-    } catch (error) {
-      console.error("Login/Signup failed:", error.response);
-    }
-  };
-
-  const addTodo = async (content) => {
-    const token = getToken();
-    try {
-      const response = await axios.post(
-        `${apiUrl}/todos`,
-        {
-          todo: {
-            content: content,
-          },
-        },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-
-      console.log("AddTodo successful:", response);
-    } catch (error) {
-      console.error("AddTodo failed:", error.response);
-    }
-  };
-
-  const getTodos = async () => {
-    const token = getToken();
-    try {
-      const response = await axios.get(`${apiUrl}/todos`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      console.log("getTodos successful:", response.data.todos);
-      return response;
-    } catch (error) {
-      console.error("getTodos failed:", error.response);
-    }
-  };
-
-  const deleteTodo = async (id) => {
-    const token = getToken();
-    try {
-      const response = await axios.delete(`${apiUrl}/todos/${id}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      console.log("deleteTodo successful:", response);
-    } catch (error) {
-      console.error("deleteTodo failed:", error.response);
-    }
-  };
-
-  const toggleTodo = async (id) => {
-    const token = getToken();
-    try {
-      const response = await axios.patch(
-        `${apiUrl}/todos/${id}/toggle`,
-        {},
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-      console.log("toggleTodo successful:", response);
-    } catch (error) {
-      console.error("toggleTodo failed:", error.response);
-    }
-  };
-
-  const editTodo = async (todo, todoId) => {
-    const token = getToken();
-    try {
-      const response = axios.put(
-        `${apiUrl}/todos/${todoId}`,
-        {
-          todo: {
-            content: todo,
-          },
-        },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-      console.log("editTodo successful:", response);
-    } catch (error) {
-      console.error("editTodo failed:", error.response);
-    }
-  };
-
-  const contextValue = {
-    getToken,
-    isLoggedIn,
-    logOut,
-    logIn,
-    addTodo,
-    getTodos,
-    deleteTodo,
-    toggleTodo,
-    editTodo,
-  };
+      setCurrentUser(cuser);
+    };
+    checkLoginStatus();
+  }, [isAuthenticated]);
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={[currentUser, setCurrentUser]}>
+      {children}
+    </AuthContext.Provider>
   );
 };
+
+export default AuthContext;

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Menu, Form, Message } from "semantic-ui-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthService";
 
 function LogIn() {
   const { logIn } = useAuth();
@@ -40,11 +40,15 @@ function LogIn() {
     validatePassword();
   };
 
-  const handleSubmit = () => {
-    validateEmail();
-    validatePassword();
-    if (!emailErrors && !passwordErrors) {
-      logIn(email, password, activeItem === "signup");
+  const handleSubmit = async (e) => {
+    try {
+      validateEmail();
+      validatePassword();
+      if (!emailErrors && !passwordErrors) {
+        logIn(email, password, activeItem === "signup");
+      }
+    } catch (error) {
+      console.error("handleSubmit failed:", error.response);
     }
   };
 
