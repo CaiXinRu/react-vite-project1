@@ -6,7 +6,8 @@ import { ToastAction } from "../../components/ui/toast";
 import { useToast } from "../../components/ui/use-toast";
 import { Toaster } from "../../components/ui/toaster";
 import { Cross2Icon, Pencil1Icon } from "@radix-ui/react-icons";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthService";
+
 import {
   Dialog,
   DialogContent,

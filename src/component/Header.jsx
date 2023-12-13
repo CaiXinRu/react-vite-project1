@@ -1,36 +1,53 @@
 import { Menu, Search, Container } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+
+import { useAuth } from "../context/AuthService";
+import AuthContext from "../context/AuthContext";
 
 function Header() {
-  const { isLoggedIn, logOut } = useAuth();
+  const { logOut } = useAuth();
 
   return (
-    <Container>
-      <Menu>
-        <Menu.Item as={Link} to="/">
-          Delusional World
-        </Menu.Item>
-        <Menu.Item>
-          <Search />
-        </Menu.Item>
-        <Menu.Menu position="right">
-          {isLoggedIn ? (
-            <>
-              <Menu.Item as={Link} to="/todolist">
-                To-Do List
-              </Menu.Item>
-              <Menu.Item as={Link}>Member Area</Menu.Item>
-              <Menu.Item onClick={logOut}>Log Out</Menu.Item>
-            </>
-          ) : (
-            <Menu.Item as={Link} to="/login">
-              Log In
+    <AuthContext.Consumer>
+      {([currentUser, setCurrentUser]) => (
+        <Container>
+          <Menu>
+            <Menu.Item as={Link} to="/">
+              Delusional World
             </Menu.Item>
-          )}
-        </Menu.Menu>
-      </Menu>
-    </Container>
+            <Menu.Item>
+              <Search />
+            </Menu.Item>
+            <Menu.Menu position="right">
+              {currentUser ? (
+                <>
+                  <Menu.Item as={Link} to="/todolist">
+                    To-Do List
+                  </Menu.Item>
+                  <Menu.Item as={Link}>Member Area</Menu.Item>
+                  <Menu.Item
+                    as={Link}
+                    to="/login"
+                    onClick={async () => {
+                      await logOut();
+                      setTimeout(() => {
+                        setCurrentUser({});
+                      }, 0);
+                    }}
+                  >
+                    Log Out
+                  </Menu.Item>
+                </>
+              ) : (
+                <Menu.Item as={Link} to="/login">
+                  Log In
+                </Menu.Item>
+              )}
+            </Menu.Menu>
+          </Menu>
+        </Container>
+      )}
+    </AuthContext.Consumer>
   );
 }
 

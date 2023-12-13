@@ -1,11 +1,11 @@
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
 import { Container } from "semantic-ui-react";
 import { AuthProvider } from "./context/AuthContext";
+
 import Header from "./component/Header";
-import Home from "./pages/Home";
-import LogIn from "./pages/LogIn";
-import TodoList from "./pages/TodoList";
+import Routers from "./Routers";
 
 function App() {
   return (
@@ -15,11 +15,7 @@ function App() {
       <AuthProvider>
         <Container>
           <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LogIn />} />
-            <Route path="/todolist" element={<TodoList />} />
-          </Routes>
+          <Routers />
         </Container>
       </AuthProvider>
     </BrowserRouter>
