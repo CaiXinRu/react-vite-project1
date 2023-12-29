@@ -27,7 +27,7 @@ function Header() {
                   <Menu.Item as={Link}>Member Area</Menu.Item>
                   <Menu.Item
                     as={Link}
-                    to="/login"
+                    to="/signin"
                     onClick={async () => {
                       await logOut();
                       setTimeout(() => {
@@ -39,7 +39,7 @@ function Header() {
                   </Menu.Item>
                 </>
               ) : (
-                <Menu.Item as={Link} to="/login">
+                <Menu.Item as={Link} to="/signin">
                   Log In
                 </Menu.Item>
               )}
