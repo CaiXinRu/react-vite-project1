@@ -6,28 +6,63 @@ const apiUrl = `https://todoo.5xcamp.us`;
 export const useAuth = () => {
   const navigate = useNavigate();
 
-  const logIn = async (email, password, isSignUp) => {
-    try {
-      const response = await axios.post(
-        isSignUp ? `${apiUrl}/users` : `${apiUrl}/users/sign_in`,
-        {
-          user: {
-            email: email,
-            password: password,
-          },
-        }
-      );
+  // const logIn = async (email, password, isSignUp) => {
+  //   try {
+  //     const response = await axios.post(
+  //       isSignUp ? `${apiUrl}/users` : `${apiUrl}/users/sign_in`,
+  //       {
+  //         user: {
+  //           email: email,
+  //           password: password,
+  //         },
+  //       }
+  //     );
 
-      console.log("Login/Signup successful:", response);
+  //     console.log("Login/Signup successful:", response);
+
+  //     navigate("/");
+
+  //     if (!isSignUp) {
+  //       localStorage.setItem("token", response.headers.authorization);
+  //     }
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Login/Signup failed:", error.response);
+  //   }
+  // };
+
+  const signUp = async (email, password) => {
+    try {
+      const response = await axios.post(`${apiUrl}/users`, {
+        user: {
+          email: email,
+          password: password,
+        },
+      });
+      console.log("Signup successful:", response);
 
       navigate("/");
-
-      if (!isSignUp) {
-        localStorage.setItem("token", response.headers.authorization);
-      }
       return response.data;
     } catch (error) {
-      console.error("Login/Signup failed:", error.response);
+      console.error("Signup failed:", error.response);
+    }
+  };
+
+  const signIn = async (email, password) => {
+    try {
+      const response = await axios.post(`${apiUrl}/users/sign_in`, {
+        user: {
+          email: email,
+          password: password,
+        },
+      });
+      console.log("Signin successful:", response);
+      localStorage.setItem("token", response.headers.authorization);
+
+      navigate("/");
+      return response.data;
+    } catch (error) {
+      console.error("Signin failed:", error.response);
     }
   };
 
@@ -151,7 +186,8 @@ export const useAuth = () => {
   };
 
   return {
-    logIn,
+    signUp,
+    signIn,
     logOut,
     isAuthenticated,
     addTodo,
