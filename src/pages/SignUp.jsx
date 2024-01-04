@@ -44,7 +44,7 @@ function SignUp() {
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Sign Up</CardTitle>
         <CardDescription>
-          Enter your email below to create an account.
+          Enter your email below to create an account!!!
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
