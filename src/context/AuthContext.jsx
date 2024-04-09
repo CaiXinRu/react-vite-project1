@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import { useAuth } from "../context/AuthService";
 
 const AuthContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const { isAuthenticated } = useAuth();
